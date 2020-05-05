@@ -8,17 +8,27 @@ const { program } = require('commander');
 const pkg = require('./package.json')
 const Tree = require('./tree');
 const VCS = 'vcs';
-const autor = {
-  username: 'Babak Gholamzadeh',
-  email: 'babak.gholamzadeh92@gmail.com'
-};
+const autor = {};
+const config = {};
+
+
+config.username = async function(username) {
+  const content = `username = ${username}\n`;
+  await appendFile(path.join(os.homedir(), `.${VCS}config`), content);
+  autor.username = username;
+}
+config.email = async function(email) {
+  const content = `email = ${email}\n`;
+  await appendFile(path.join(os.homedir(), `.${VCS}config`), content);
+  autor.email = email;
+}
 
 
 program.version(pkg.version);
 
 
 
-console.log('running....\n');
+// console.log('running....\n');
 
 
 
@@ -30,12 +40,23 @@ console.log('running....\n');
     program
       .command('init')
       .action(init);
-    
-    await program.parseAsync(process.argv);
-      
     // await init();
 
-    // // Add some configs that required to recognize the committer
+    // Add some configs that required to recognize the committer
+    const configCommand = program.command('config');
+    configCommand
+      .command('user.name <username>')
+      .action(async username => {
+        await config.username(username);
+        console.log('your username is:', autor.username);
+      });
+    configCommand
+      .command('user.email <email>')
+      .action(async email => {
+        await config.email(email);
+        console.log('your email is:', autor.email);
+      });
+
     // await config(username, email);
 
     // // Fetch all the files from everwhere
@@ -47,11 +68,12 @@ console.log('running....\n');
     // // Create blobs and tress
     // const rootHash = await createObjects(root);
     // console.log('rootHash:', rootHash);
-    
+
     // // Commit them automatically
     // const commitHash = await createCommit(process.argv[2] || 'default message', rootHash, null);
     // console.log('commitHash:', commitHash);
 
+    await program.parse(process.argv);
 
   } catch (err) {
     console.log('>>>>>> ERROR:', err);
@@ -128,8 +150,8 @@ async function createCommit(commitMsg, rootHash, parent) {
   const timestamp = Math.floor(+new Date() / 1000);
   let timezoneOffset = new Date().getTimezoneOffset() * -1;
   let sign = '';
-  if(Math.sign(timezoneOffset) === 1) sign = '+';
-  else if(Math.sign(timezoneOffset) === -1) sign = '-';
+  if (Math.sign(timezoneOffset) === 1) sign = '+';
+  else if (Math.sign(timezoneOffset) === -1) sign = '-';
   const hours = Math.floor(timezoneOffset / 60).toString().padStart(2, '0');
   const minutes = (timezoneOffset % 60).toString().padStart(2, '0');
   timezoneOffset = `${sign}${hours}${minutes}`;
@@ -147,12 +169,6 @@ function sha1(data) {
   var generator = crypto.createHash('sha1');
   generator.update(data);
   return generator.digest('hex');
-}
-
-
-async function config(username, email) {
-  const content = JSON.stringify({ username, email });
-  await mkfile(path.join(os.homedir(), `.${VCS}config`), content);
 }
 
 
@@ -179,6 +195,9 @@ async function mkdir(path) {
 
 function mkfile(path, content = '') {
   return fs.writeFile(path, content);
+}
+function appendFile(path, content = '') {
+  return fs.appendFile(path, content);
 }
 
 
