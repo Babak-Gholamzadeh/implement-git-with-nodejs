@@ -39,7 +39,10 @@ program.version(pkg.version);
     // Create '.vcs' directory and 'objects' directory inside it
     program
       .command('init')
-      .action(init);
+      .action(async() => {
+        await init();
+        console.log(`The local repository has been created in the .${VCS} directory.`);
+      });
     // await init();
 
     // Add some configs that required to recognize the committer
