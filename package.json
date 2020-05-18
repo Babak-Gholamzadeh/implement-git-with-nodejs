@@ -1,16 +1,19 @@
 {
-  "name": "vcs",
+  "name": "vcs-cli",
   "version": "0.1.0",
   "description": "Implementing Git (distributed version control system) with Node.js",
-  "main": "index.js",
+  "main": "./bin/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "Babak Gholamzadeh",
   "license": "MIT",
-  "bin": "./index.js",
+  "bin": {
+    "vcs": "./bin/index.js"
+  },
   "dependencies": {
-    "commander": "^5.1.0"
+    "commander": "^5.1.0",
+    "composable-utils": "^0.1.2"
   }
 }
