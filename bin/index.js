@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+require('composable-utils').exposeGlobally('_');
 
 // Define a temporary conventional name
 // to avoid the conflict of using 'git'
